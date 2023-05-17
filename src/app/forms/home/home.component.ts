@@ -21,23 +21,35 @@ export class HomeComponent {
 
   constructor() {
     this.commands = [];
-    this.commands.push({id: '20', code: 'DATA_DAY', description: 'Pulse counter daily data on billing hour', color: 'GREEN'});
-    this.commands.push({id: '40', code: 'DATA_HOUR_DIF', description: 'Pulse counter hourly data, data accumulated on hourly basis and transmitted from jooby rf module on adjustable period', color: 'GREEN'});
-    this.commands.push({id: '60', code: 'LAST_EVENTS', description: 'Last unread event', color: 'GREEN'});
-    this.commands.push({id: '07', code: 'GET_CURRENT', description: 'Current pulse counter value', color: 'GREEN'});
-    this.commands.push({id: '09', code: 'TIME2000', description: 'Current rf module time (time 2000 format)', color: 'GREEN'});
-    this.commands.push({id: '0A', code: 'EVENTS', description: 'Critical event alarm (magnetic influence, tamper sensor, ...). Deprecated. See NEW_EVENT', color: 'GREEN'});
-    this.commands.push({id: '11', code: 'GET_VERSION', description: 'Software version. Deprecated', color: 'GREEN'});
-    this.commands.push({id: '14', code: 'NEW_STATUS', description: 'RF Module status', color: 'GREEN'});
-    this.commands.push({id: '15', code: 'NEW_EVENT', description: 'New event occurs. Same as EVENTS but have different structure. EVENTS command will be not supported on new rf modules variants', color: 'GREEN'});
-    this.commands.push({id: '16', code: 'DATA_DAY_MUL', description: 'Pulse counters daily data (for multi-input rf modules)', color: 'GREEN'});
-    this.commands.push({id: '17', code: 'DATA_HOUR_DIF_MUL', description: 'Pulse counters hourly data, data accumulated on hourly basis and transmitted from jooby module on adjustable period (for multi-input rf modules)', color: 'GREEN'});
-    this.commands.push({id: '18', code: 'GET_CURRENT_MUL', description: 'Current pulse counters value (for multi-input rf modules)', color: 'GREEN'});
-    this.commands.push({id: '1E', code: 'MTX_CMD', description: 'MTX 0x1e subsystem. MTX electricity meter commands', color: 'GREEN'});
+    this.commands.push({id: '20', code: 'DATA_DAY', title: '', description: 'Pulse counter daily data on billing hour', color: 'GREEN'});
+    this.commands.push({id: '40', code: 'DATA_HOUR_DIF', title: '',description: 'Pulse counter hourly data, data accumulated on hourly basis and transmitted from jooby rf module on adjustable period', color: 'GREEN'});
+    this.commands.push({id: '60', code: 'LAST_EVENTS', title: '',description: 'Last unread event', color: 'GREEN'});
+    this.commands.push({id: '07', code: 'GET_CURRENT', title: '',description: 'Current pulse counter value', color: 'GREEN'});
+    this.commands.push({id: '09', code: 'TIME2000', title: '',description: 'Current rf module time (time 2000 format)', color: 'GREEN'});
+    this.commands.push({id: '0A', code: 'EVENTS', title: '',description: 'Critical event alarm (magnetic influence, tamper sensor, ...). Deprecated. See NEW_EVENT', color: 'GREEN'});
+    this.commands.push({id: '11', code: 'GET_VERSION', title: '',description: 'Software version. Deprecated', color: 'GREEN'});
+    this.commands.push({id: '14', code: 'NEW_STATUS', title: '',description: 'RF Module status', color: 'GREEN'});
+    this.commands.push({id: '15', code: 'NEW_EVENT', title: '',description: 'New event occurs. Same as EVENTS but have different structure. EVENTS command will be not supported on new rf modules variants', color: 'GREEN'});
+    this.commands.push({id: '16', code: 'DATA_DAY_MUL', title: '',description: 'Pulse counters daily data (for multi-input rf modules)', color: 'GREEN'});
+    this.commands.push({id: '17', code: 'DATA_HOUR_DIF_MUL', title: '',description: 'Pulse counters hourly data, data accumulated on hourly basis and transmitted from jooby module on adjustable period (for multi-input rf modules)', color: 'GREEN'});
+    this.commands.push({id: '18', code: 'GET_CURRENT_MUL', title: '',description: 'Current pulse counters value (for multi-input rf modules)', color: 'GREEN'});
+    this.commands.push({id: '1E', code: 'MTX_CMD', title: '',description: 'MTX 0x1e subsystem. MTX electricity meter commands', color: 'GREEN'});
 
   }
 
   decode(): void {
+    this.pkg = this.pkg.replaceAll(' ', '');
+    let newStr = '';
+    for(let i = 0; i < this.pkg.length; i++) {
+      if (i % 2 === 0) {
+        newStr += this.pkg[i] ;
+        if (  (i + 1) < this.pkg.length) {
+          newStr += this.pkg[i + 1] + ' ';
+        }
+      }
+    }
+    this.pkg = newStr;
+
     this.decodedPkg = [];
     var splits = this.pkg.split(' ');
     
@@ -46,44 +58,56 @@ export class HomeComponent {
       return;
     }
 
+    //#region Command Type
+    commandInfo.title = 'ბრძანების კოდი: ';
     this.decodedPkg.push(commandInfo);
+    //#endregion
 
-    this.decodedPkg.push({id: splits[1], code: Number('0x'+splits[1]), description: 'პაკეტის სიგრძე', color: 'Orange'});
+    //#region Package Length
+    this.decodedPkg.push({id: splits[1], title: 'პაკეტის სიგრძე: ' , code: Number('0x'+splits[1]), description: 'HEX to Decimal: ' + splits[1] + ' = ' + Number('0x'+splits[1]), color: '#3498DB'});
+    //#endregion
+
+    //#region Date & Time
+    const dateTimeBinary = this.hex2bin(splits[2]) + this.hex2bin(splits[3]) + this.hex2bin(splits[4]);
+    const yearBinary = dateTimeBinary.slice(0, 7);
+    const monthBinary = dateTimeBinary.slice(7, 11);
+    const dateBinary = dateTimeBinary.slice(11, 16);
+    const hoursBinary = dateTimeBinary.slice(16, 19);
+    const hourBinary = dateTimeBinary.slice(19, 24);
+    this.decodedPkg.push({id: splits[2] + ' ' + splits[3]+ ' ' + splits[4], code: '[წელი: ' + parseInt(yearBinary, 2) + ' ] - ' + yearBinary  + ', [თვე: ' + parseInt(monthBinary, 2) + ' ] - ' + monthBinary + ', [თარიღი: ' + parseInt(dateBinary, 2) + ' ] - '+ dateBinary + ', [საათები: ' + parseInt(hoursBinary, 2) + ' ] - ' + hoursBinary + ', [საათი: ' + parseInt(hourBinary, 2)+ ' ] - ' + hourBinary, title: 'თარიღი: ', color: '#DB3482', description: 'HEX to Binary: ' + dateTimeBinary});
+    //#endregion
+
+    //#region Channel
+    this.decodedPkg.push({id: splits[5], title: 'საკომუნიკაციო არხი: ', code: Number(splits[5]), color: '#34DB3C', description: 'მიუთითებს რომელი არხი გამოიყენა მოწყობილობამ მნიშვნელობის გადმოსაცემად' })
+    //#endregion
+
+    //#region Meter Data
+    this.decodedPkg.push({id: splits[6], title: 'გადმოცემული მნიშვნელობა: ', code: Number('0x'+splits[6]), color: '#6734DB', description: 'მიმდინარე მნიშვნელობა, რომელიც გადმოსცა მოწყობილობამ' })
+    //#endregion
+
+    //#region Empty blocks
+    for (let i = 7; i < splits.length; i++) {
+      if (Number(splits[i]) === 0) {
+        this.decodedPkg.push({id: splits[i], title: '' })
+      } else {
+        return;
+      }
+    }
+    //#endregion
+
+
   }
 
   hex2bin(hex) {
     return ("00000000" + (parseInt(hex, 16)).toString(2)).substr(-8);
   }
-
-  getBytes(hex: any): Uint8Array {
-    let cleanHex = hex.replace(/\s+|0x/g, '');
-    
-    // correct wrong input
-    if (cleanHex.length % 2 !== 0) {
-      cleanHex = `0${cleanHex}`;
-    }
-
-    console.log(cleanHex);
-    const resultLength = cleanHex.length / 2;
-    const result = new Uint8Array(resultLength);
-    console.log(result);
-    for (let index = 0; index < resultLength; index++) {
-      result[index] = parseInt(cleanHex.substring(index * 2, index * 2 + 2), 16);
-    }
-    return result;
-  }
-
-}
-
-export class LineInfo {
-  public id: number;
-  public command: CommandInfo;
-  public color: string;
 }
 
 export class CommandInfo {
   public id: string;
   public code: string;
+  public title: string;
   public description: string;
   public color: string;
+
 }

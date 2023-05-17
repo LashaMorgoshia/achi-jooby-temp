@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="frame border rounded">
+    <div class="frame border rounded-4">
         <div class="mb-3">
             <p class="fs-1">პაკეტი</p>
             <input type="text" class="form-control" id="idpkg" name="pkgInput" [(ngModel)]="pkg">
@@ -18,8 +18,8 @@
             <div class="fs-5" *ngFor="let line of decodedPkg" [ngStyle]="{'color': line.color}">
                 <span class="text-body-tertiary text-opacity-50">0x </span>
                 <span class="fw-bold">{{line.id}}</span>
-                <span class="text-muted"> - {{line.code}}</span>
-                <span class="text-muted fs-6"> - {{line.description}}</span>
+                <span class="text-muted"> - {{line.title}}</span>
+                <span class="fw-bold" [matTooltip]="line.description">{{line.code}}</span>
             </div>
         </div>
     </div>
