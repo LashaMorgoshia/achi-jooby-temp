@@ -1,0 +1,27 @@
+/* You can add global styles to this file, and also import other style files */
+@font-face {
+    font-family: 'BPG Nino Mtavruli';
+    src: url(assets/fonts/bpg-nino-mtavruli-webfont.eot);
+    src: url(assets/fonts/bpg-nino-mtavruli-webfont.eot?#iefix) format('embedded-opentype'), url(assets/fonts/bpg-nino-mtavruli-webfont.woff2) format('woff2'), url(assets/fonts/bpg-nino-mtavruli-webfont.woff) format('woff'), url(assets/fonts/bpg-nino-mtavruli-webfont.ttf) format('truetype'), url(assets/fonts/bpg-nino-mtavruli-webfont.svg#bpg_nino_mtavruliregular) format('svg')
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: "BPG Nino Mtavruli", sans-serif !important;
+}
+
+.container {
+    height: 90vh !important;
+    
+}
+
+.frame {
+    position: relative;
+    top: 20%;
+    padding: 20pt;
+}

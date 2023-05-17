@@ -1,0 +1,26 @@
+<div class="container">
+    <div class="frame border rounded">
+        <div class="mb-3">
+            <p class="fs-1">პაკეტი</p>
+            <input type="text" class="form-control" id="idpkg" name="pkgInput" [(ngModel)]="pkg">
+        </div>
+
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <button class="btn btn-outline-success" type="button" (click)="decode()"><span
+                    class="fs-5">დეშიფრაცია</span></button>
+        </div>
+
+        <div style="margin-top: 20pt; margin-bottom: 20pt;">
+                <span *ngFor="let line of decodedPkg" class="fs-5" [ngStyle]="{'color': line.color}"> {{line.id}}</span>
+        </div>
+
+        <div class="row" style="margin-top: 20pt;">
+            <div class="fs-5" *ngFor="let line of decodedPkg" [ngStyle]="{'color': line.color}">
+                <span class="text-body-tertiary text-opacity-50">0x </span>
+                <span class="fw-bold">{{line.id}}</span>
+                <span class="text-muted"> - {{line.code}}</span>
+                <span class="text-muted fs-6"> - {{line.description}}</span>
+            </div>
+        </div>
+    </div>
+</div>
